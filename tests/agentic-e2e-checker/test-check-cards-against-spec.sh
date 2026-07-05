@@ -119,6 +119,29 @@ assert_exit 1 "reworded falsification -> exit 1" \
   "$CHECKER" "$TEST_ROOT/t3/spec.md" "$TEST_ROOT/t3/cards"
 assert_out_contains "widget-status-flags" "failure names the card"
 
+echo "verbatim line outside Expected does not count"
+make_spec "$TEST_ROOT/t3b"; make_cards "$TEST_ROOT/t3b/cards"
+cat > "$TEST_ROOT/t3b/cards/widget-show-table.md" <<'EOF'
+# widget-show-table: table renders with TOTAL
+
+**What this covers**: If stdout's last line is not `TOTAL` followed by the two-decimal sum (20.85 for the seed fixture), or the TOTAL row is absent entirely, the scenario FAILS.
+
+## Pre-state
+A built widget binary.
+
+## Steps
+1. Run `widget show`.
+
+## Expected
+The widget prints a friendly banner and exits zero.
+
+## Cleanup
+Nothing to clean.
+EOF
+assert_exit 1 "line only outside Expected -> exit 1" \
+  "$CHECKER" "$TEST_ROOT/t3b/spec.md" "$TEST_ROOT/t3b/cards"
+assert_out_contains "widget-show-table" "failure names the card"
+
 echo "missing card file"
 make_spec "$TEST_ROOT/t4"; make_cards "$TEST_ROOT/t4/cards"
 rm "$TEST_ROOT/t4/cards/widget-show-table.md"

@@ -34,6 +34,19 @@ warn() { echo "warn: $1"; }
 # design spec: markdown re-wrapping must not defeat the verbatim check.)
 normalize() { tr -s '[:space:]' ' ' | sed -e 's/^ //' -e 's/ $//'; }
 
+# Text of the card's Expected section only (case-insensitive heading match,
+# any ##+ level; section ends at the next heading or EOF).
+expected_section() {
+  awk '
+    /^#{2,}[[:space:]]/ {
+      low = tolower($0)
+      if (low ~ /^#+[[:space:]]*expected[[:space:]]*$/) { insec = 1; next }
+      if (insec) exit
+    }
+    insec { print }
+  ' "$1"
+}
+
 # --- extract the first table under the (case-insensitive) heading ----------
 TABLE="$(awk '
   /^#{1,6}[[:space:]]/ {
@@ -104,10 +117,10 @@ while [ "$i" -lt "$ROWS" ]; do
     fail "missing card file: $f"
     i=$((i + 1)); continue
   fi
-  hay="$(normalize < "$f")"
+  hay="$(expected_section "$f" | normalize)"
   case "$hay" in
     *"$falsif"*) : ;;
-    *) fail "$f: falsification line not present verbatim.
+    *) fail "$f: falsification line not present verbatim in the ## Expected section.
        expected (normalized): $falsif" ;;
   esac
   grep -q '\*\*What this covers\*\*' "$f" || fail "$f: missing **What this covers**"
