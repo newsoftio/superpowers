@@ -38,7 +38,7 @@ normalize() { tr -s '[:space:]' ' ' | sed -e 's/^ //' -e 's/ $//'; }
 # any ##+ level; section ends at the next heading or EOF).
 expected_section() {
   awk '
-    /^#{2,}[[:space:]]/ {
+    /^#{1,6}[[:space:]]/ {
       low = tolower($0)
       if (low ~ /^#+[[:space:]]*expected[[:space:]]*$/) { insec = 1; next }
       if (insec) exit
@@ -60,6 +60,7 @@ TABLE="$(awk '
 
 if [ -z "$TABLE" ]; then
   echo "no scenario table: $SPEC has no \"E2E scenario cards\" heading with a table under it" >&2
+  echo "(heading must be exactly \"E2E scenario cards\" — no numbering or extra words)" >&2
   exit 2
 fi
 
@@ -125,7 +126,7 @@ while [ "$i" -lt "$ROWS" ]; do
   esac
   grep -q '\*\*What this covers\*\*' "$f" || fail "$f: missing **What this covers**"
   for sec in Pre-state Steps Expected Cleanup; do
-    grep -Eiq "^#{2,}[[:space:]]*${sec}" "$f" || fail "$f: missing ## ${sec} section"
+    grep -Eiq "^#{2,}[[:space:]]*${sec}[[:space:]]*$" "$f" || fail "$f: missing ## ${sec} section"
   done
   i=$((i + 1))
 done

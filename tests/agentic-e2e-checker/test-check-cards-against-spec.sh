@@ -142,6 +142,38 @@ assert_exit 1 "line only outside Expected -> exit 1" \
   "$CHECKER" "$TEST_ROOT/t3b/spec.md" "$TEST_ROOT/t3b/cards"
 assert_out_contains "widget-show-table" "failure names the card"
 
+echo "level-1 heading after Expected does not extend the section (false-PASS regression)"
+# ## Expected is vague; a later # Appendix (level-1 heading, no intervening
+# ##+ heading) carries the verbatim falsification line. The Expected section
+# must end at the level-1 heading, so this must FAIL, not false-PASS.
+make_spec "$TEST_ROOT/t3c"; make_cards "$TEST_ROOT/t3c/cards"
+cat > "$TEST_ROOT/t3c/cards/widget-show-table.md" <<'EOF'
+# widget-show-table: table renders with TOTAL
+
+**What this covers**: the rendered table.
+
+## Pre-state
+A built widget binary.
+
+## Steps
+1. Run `widget show`.
+
+## Expected
+The widget prints something on screen.
+
+# Appendix
+
+If stdout's last line is not `TOTAL` followed by the
+two-decimal sum (20.85 for the seed
+fixture), or the TOTAL row is absent entirely, the scenario FAILS.
+
+## Cleanup
+Nothing to clean.
+EOF
+assert_exit 1 "level-1 heading terminates Expected section -> exit 1" \
+  "$CHECKER" "$TEST_ROOT/t3c/spec.md" "$TEST_ROOT/t3c/cards"
+assert_out_contains "widget-show-table" "failure names the card"
+
 echo "missing card file"
 make_spec "$TEST_ROOT/t4"; make_cards "$TEST_ROOT/t4/cards"
 rm "$TEST_ROOT/t4/cards/widget-show-table.md"
@@ -156,6 +188,13 @@ assert_exit 1 "card without Cleanup heading -> exit 1" \
   "$CHECKER" "$TEST_ROOT/t5/spec.md" "$TEST_ROOT/t5/cards"
 assert_out_contains "Cleanup" "failure names the section"
 
+echo "presence grep requires exact Expected heading, not a prefix match"
+make_spec "$TEST_ROOT/t9"; make_cards "$TEST_ROOT/t9/cards"
+sed -i.bak 's/^## Expected$/## Expectedly odd heading/' "$TEST_ROOT/t9/cards/widget-show-table.md"
+assert_exit 1 "prefix-matching heading -> exit 1" \
+  "$CHECKER" "$TEST_ROOT/t9/spec.md" "$TEST_ROOT/t9/cards"
+assert_out_contains "missing ## Expected section" "failure names the Expected section"
+
 echo "extra card is a warning, not a failure"
 make_spec "$TEST_ROOT/t6"; make_cards "$TEST_ROOT/t6/cards"
 good_card_1 > "$TEST_ROOT/t6/cards/extra-exploration.md"
@@ -169,6 +208,7 @@ printf '# Widget Design\n\nNo table here.\n' > "$TEST_ROOT/t7/spec.md"
 assert_exit 2 "table-less spec -> exit 2" \
   "$CHECKER" "$TEST_ROOT/t7/spec.md" "$TEST_ROOT/t7/cards"
 assert_out_contains "no scenario table" "diagnostic present"
+assert_out_contains "heading must be exactly" "diagnostic includes naming hint"
 
 echo "heading match is case-insensitive"
 make_spec "$TEST_ROOT/t8"; make_cards "$TEST_ROOT/t8/cards"
