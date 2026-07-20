@@ -118,6 +118,12 @@ Subagent (general-purpose):
 
     If you find issues during self-review, fix them now before reporting.
 
+    If a constraint violation is already in a landed commit you cannot safely
+    amend, forward-fix it in a new commit when possible; when it is not, report
+    the deviation explicitly with Status DONE_WITH_CONCERNS — never report the
+    task incomplete solely for a cosmetic miss on an otherwise green build.
+    Whether the deviation parks or blocks is the dispatching controller's call.
+
     ## After Review Findings
 
     If the task review finds issues, you will be resumed with the findings.

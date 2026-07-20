@@ -391,6 +391,12 @@ message as your other bookkeeping:
 - `Task <N>: complete (commits <base7>..<head7>, review clean)`
 - `Task <N>: complete (commits <base7>..<head7>, <K> parked)` after a
   tripped breaker
+- `Task <N>: complete (commits <base7>..<head7>, deviation parked: <rule>)`
+  when a landed commit violates a mechanical constraint that nothing
+  downstream builds on. Record the ruling in the ledger. A green build with
+  a parked, recorded deviation is complete — do not fail the task, and do
+  not rewrite landed history to chase cosmetics. A load-bearing violation
+  is different: that is a BLOCKED, not a deviation.
 
 Then mark the todo complete and move on. Never move to the next task while
 the review has open Critical/Important issues that are neither fixed nor
@@ -418,7 +424,9 @@ Then run exactly one scoped re-review of the fix wave
 (`scripts/review-package PLAN_FILE FIX_BASE HEAD` over the fix range,
 [re-review-prompt.md](re-review-prompt.md)).
 Adjudicate any residual findings as in the task loop's breaker: park with
-rulings, or stop on load-bearing ones. There is no second fix wave —
+rulings, or stop on load-bearing ones. The same valve applies to
+mechanical-constraint misses discovered at the end: non-load-bearing means
+parked with a ruling, not a failed branch. There is no second fix wave —
 residual load-bearing findings surface to your human partner when
 finishing-a-development-branch presents the options.
 
