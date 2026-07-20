@@ -140,7 +140,11 @@ a ledger file, not only in todos.
   that happens, recover from `git log`.
 
 Read the plan once, note its context and Global Constraints, and create a
-todo per task.
+todo per task. That is the plan's one full read for the whole session:
+after Setup, the ledger and `scripts/task-brief` extracts are your working
+memory — re-reading the plan or spec late in the run (to "double-check"
+completion, to rebuild the final-review dispatch) re-buys context you
+already paid for and is forbidden.
 
 Before dispatching Task 1, scan the plan once for conflicts:
 
@@ -195,7 +199,10 @@ that implementer. Single-file mechanical fixes also take the cheapest tier.
 
 Everything you paste into a dispatch prompt — and everything a subagent
 prints back — stays resident in your context for the rest of the session
-and is re-read on every later turn. Hand artifacts over as files.
+and is re-read on every later turn. Hand artifacts over as files. The same
+tax applies to your own words: checkpoint in one short line, keep
+bookkeeping in the ledger file, and never paste back into the conversation
+what a file already holds.
 
 ### 1. Dispatch the implementer
 
@@ -423,9 +430,12 @@ on the most capable available model (see Model Selection), using
 superpowers:requesting-code-review's
 [code-reviewer.md](../requesting-code-review/code-reviewer.md). Point it at
 the ledger's deferred-minor and parked lines so it can triage which must be
-fixed before merge. Write the returned review to `<workspace>/final-review.md`
-before dispatching any fix wave — the merge decision cites the artifact, not a
-recollection.
+fixed before merge. Build that dispatch from the ledger alone — the
+completion lines, parked rulings, and deferred minors are the whole-run
+summary; do not re-read the plan, the spec, or per-task reports to
+reconstruct what the ledger already states. Write the returned review to
+`<workspace>/final-review.md` before dispatching any fix wave — the merge
+decision cites the artifact, not a recollection.
 
 If the final whole-branch review returns findings, dispatch ONE fix subagent
 with the complete findings list and the binding constraint values
