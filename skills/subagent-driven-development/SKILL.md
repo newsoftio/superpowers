@@ -211,9 +211,15 @@ and fix-round diffs need it.
   first — it is your requirements, with the exact values to use verbatim";
   (3) interfaces and decisions from earlier tasks that the brief cannot
   know; (4) your resolution of any ambiguity you noticed in the brief;
-  (5) the report-file path and report contract. Exact values (numbers,
-  magic strings, signatures, test cases) appear only in the brief. Never
-  make a subagent read the whole plan file.
+  (5) the report-file path and report contract; (6) the plan's binding
+  constraint values — any Global Constraint that mandates an exact
+  mechanical form (commit-message rules, naming rules, fixed literals) —
+  pasted verbatim. Task-specific exact values (numbers, magic strings,
+  signatures, test cases) appear only in the brief; binding constraint
+  values are the one exception — they ride in EVERY dispatch, because a
+  subagent that must recall a constraint from memory will reconstruct it
+  from its own priors instead. Never make a subagent read the whole plan
+  file.
 - **Report file:** name the implementer's report file after the brief
   (brief `…/task-N-brief.md` → report `…/task-N-report.md`) and put it in
   the dispatch prompt. The implementer writes the full report there and
@@ -323,14 +329,16 @@ scoped re-review. Five rounds maximum per task:
 verbatim. Its context is intact: it knows the task, the code, and its own
 choices. If your harness cannot send another message to a live subagent,
 dispatch a fresh implementer carrying the brief path, the report-file path,
-and the findings — the report file is the persistent memory either way.
+the findings, and the binding constraint values verbatim — the report file
+is the persistent memory either way.
 
 **Rounds 4-5 — dispatch a fresh implementer on a more capable model** (per
 Model Selection), with the brief path, the report-file path, the open
-findings, and this framing: "A prior implementer attempted this task
-[N] times; you own it now. Read the report file for what was tried." A loop
-that survives three resumes usually means the implementer cannot see its
-own problem — fresh eyes and a capability bump in one move.
+findings, the binding constraint values verbatim, and this framing: "A
+prior implementer attempted this task [N] times; you own it now. Read the
+report file for what was tried." A loop that survives three resumes usually
+means the implementer cannot see its own problem — fresh eyes and a
+capability bump in one move.
 
 **Every round, either way:** the implementer fixes, re-runs the tests
 covering the amended code, appends its fix report to the same report file,
@@ -402,7 +410,8 @@ the ledger's deferred-minor and parked lines so it can triage which must be
 fixed before merge.
 
 If the final whole-branch review returns findings, dispatch ONE fix subagent
-with the complete findings list — not one fixer per finding.
+with the complete findings list and the binding constraint values
+verbatim — not one fixer per finding.
 Per-finding fixers each rebuild context and re-run suites; a real
 session's final-review fix wave cost more than all its tasks combined.
 Then run exactly one scoped re-review of the fix wave

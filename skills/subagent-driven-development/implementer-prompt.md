@@ -15,6 +15,12 @@ Subagent (general-purpose):
     Read your task brief first: [BRIEF_FILE]
     It contains the full task text from the plan.
 
+    ## Binding Constraint Values
+
+    [CONSTRAINT_VALUES — the plan's mechanical constraints, pasted verbatim
+    by the dispatcher. If a rule here mandates an exact form (commit-message
+    text, naming, fixed literals), reproduce it exactly — never from memory.]
+
     ## Context
 
     [Scene-setting: where this fits, dependencies, architectural context]
