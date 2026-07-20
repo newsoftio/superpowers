@@ -133,6 +133,10 @@ a ledger file, not only in todos.
   plan's progress: leave it in place and start your own, fresh.
 - Create the ledger with its identity as the first line:
   `# SDD ledger — plan: <plan file path>`.
+- During that same Setup read, copy the plan's Global Constraints section
+  verbatim into `<workspace>/constraints.md`. Every dispatch's binding
+  constraint values paste from that file — the plan itself stays closed
+  after Setup, even across compaction.
 - The ledger is your recovery map: the commits it names exist in git even
   when your context no longer remembers creating them. After compaction,
   trust the ledger and `git log` over your own recollection.
