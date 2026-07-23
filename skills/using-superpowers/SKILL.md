@@ -57,6 +57,19 @@ If your harness appears here, read its reference file for special instructions:
 - Pi: `references/pi-tools.md`
 - Antigravity: `references/antigravity-tools.md`
 
+## Communication
+
+These conventions apply to every reply, in every skill:
+
+- **Questions are inline prose — never the question widget.** Ask clarifying questions as normal text in your reply (one at a time where a skill says so) and wait for the answer. Do not use AskUserQuestion or any structured question UI, even where a skill says "ask the user". Offering lettered options (a/b/c) inside the text is fine.
+- **Every substantive reply leads with a `TLDR;`.** Reply as you normally would — the TLDR; is a preface, not a replacement for the full answer.
+- **Problems and decisions are enumerated** so they can be referenced later in the conversation: decisions as D0, D1, D2…; problems as P1, P2, P3…. Present each as:
+
+  > TLDR;
+  > **Decision D2 (or Problem P1):** one-line statement
+  > **Why:** simple, digestible explanation
+  > **Options:** bullet list with exactly one recommended path
+
 ## User Instructions
 
 User instructions (CLAUDE.md, AGENTS.md, GEMINI.md, etc, direct requests) take precedence over skills, which in turn override default behavior. Only skip skill workflows or instructions when your human partner has explicitly told you to.
