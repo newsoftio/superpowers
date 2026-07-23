@@ -26,7 +26,7 @@ You MUST create a task for each of these items and complete them in order:
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
+6. **Write design doc** — save to `docs/superpowers/YYYY-MM-DD-<topic>/spec.md` (the arc folder — every artifact of this arc lives in that one folder) and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 8. **User reviews written spec** — ask user to review the spec file before proceeding
 9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
@@ -103,10 +103,18 @@ digraph brainstorming {
 
 **Documentation:**
 
-- Write the validated design (spec) to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`
+- Write the validated design (spec) to `docs/superpowers/YYYY-MM-DD-<topic>/spec.md`
   - (User preferences for spec location override this default)
 - Use elements-of-style:writing-clearly-and-concisely skill if available
 - Commit the design document to git
+
+**Required Spec Sections:**
+
+Every spec MUST contain these three sections:
+
+1. **Touched-files treeview** — a file tree of every file the design creates, modifies, or deletes, each annotated with a projected LOC delta (`+adds/−removes`). Grounded, never guessed: every modify/delete path must be verified to exist during exploration; create paths must follow the repo's layout rules.
+2. **To-be diagram** — write `solution-tobe.puml` next to the spec showing the post-change architecture. Color code: **orange = modified, green = added, red = removed**, with a legend. The diagram must agree with the treeview (same components, same add/modify/remove classification).
+3. **Parallel execution plan** — design units grouped into lanes that can be built concurrently: per lane its ordered tasks, its dependencies on other lanes, and merge/checkpoint gates. This section is the input writing-plans uses for task ordering and parallel subagent dispatch.
 
 **Spec Self-Review:**
 After writing the spec document, look at it with fresh eyes:
@@ -115,6 +123,7 @@ After writing the spec document, look at it with fresh eyes:
 2. **Internal consistency:** Do any sections contradict each other? Does the architecture match the feature descriptions?
 3. **Scope check:** Is this focused enough for a single implementation plan, or does it need decomposition?
 4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
+5. **Required sections:** treeview (paths verified, LOC deltas present), to-be puml (colors consistent with the treeview), parallel execution plan — all present and mutually consistent?
 
 Fix any issues inline. No need to re-review — just fix and move on.
 
