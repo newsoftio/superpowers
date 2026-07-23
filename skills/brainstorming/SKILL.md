@@ -21,15 +21,16 @@ Every project goes through this process. A todo list, a single-function utility,
 
 You MUST create a task for each of these items and complete them in order:
 
-1. **Explore project context** — check files, docs, recent commits
+1. **Explore project context (grounding pass 1 — recon)** — check files, docs, recent commits; survey which existing paths, subsystems, and patterns already cover this area (code-graph tooling where available, otherwise search). Recon findings must shape the approaches in step 4.
 2. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity, get user approval after each section
-6. **Write design doc** — save to `docs/superpowers/YYYY-MM-DD-<topic>/spec.md` (the arc folder — every artifact of this arc lives in that one folder) and commit
-7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
-8. **User reviews written spec** — ask user to review the spec file before proceeding
-9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
+6. **Ground the treeview (grounding pass 2)** — draft the touched-files treeview, then dispatch spec-researcher subagent(s) (see [spec-researcher-prompt.md](spec-researcher-prompt.md)) to fill the evidence contract before the spec is written
+7. **Write design doc** — save to `docs/superpowers/YYYY-MM-DD-<topic>/spec.md` (the arc folder — every artifact of this arc lives in that one folder) and commit
+8. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope, grounding (see below)
+9. **User reviews written spec** — ask user to review the spec file before proceeding
+10. **Transition to implementation** — invoke writing-plans skill to create implementation plan
 
 ## Process Flow
 
@@ -50,7 +51,8 @@ digraph brainstorming {
     "Propose 2-3 approaches" -> "Present design sections";
     "Present design sections" -> "User approves design?";
     "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Write design doc" [label="yes"];
+    "User approves design?" -> "Ground treeview\n(spec-researcher subagents)" [label="yes"];
+    "Ground treeview\n(spec-researcher subagents)" -> "Write design doc";
     "Write design doc" -> "Spec self-review\n(fix inline)";
     "Spec self-review\n(fix inline)" -> "User reviews spec?";
     "User reviews spec?" -> "Write design doc" [label="changes requested"];
@@ -112,9 +114,17 @@ digraph brainstorming {
 
 Every spec MUST contain these three sections:
 
-1. **Touched-files treeview** — a file tree of every file the design creates, modifies, or deletes, each annotated with a projected LOC delta (`+adds/−removes`). Grounded, never guessed: every modify/delete path must be verified to exist during exploration; create paths must follow the repo's layout rules.
+1. **Touched-files treeview** — a file tree of every file the design creates, modifies, or deletes. Every entry carries the **evidence contract**, filled by the pass-2 spec-researcher subagents (never by unaided recall):
+   - **Ladder tag:** `reuse` (existing path used as-is) | `extend` (existing path or generic construct extended) | `lib` (library adopted) | `new` (net-new path)
+   - **Evidence:** `reuse`/`extend` — the existing path(s) cited `file:line`; `lib` — the library plus the doc/registry command used to confirm the latest version (never pinned from recall); `new` — the searches that came up empty (terms + scopes tried) and a one-line justification why nothing fits
+   - **Consumers:** who reads/writes this path today
+   - **Projected LOC delta** (`+adds/−removes`), estimated by the researcher
+
+   Prefer the paved road, in order: reuse → extend → lib → new. `new` is the last resort and must prove it. Prefer generic, reusable constructs over per-feature rewrites.
 2. **To-be diagram** — write `solution-tobe.puml` next to the spec showing the post-change architecture. Color code: **orange = modified, green = added, red = removed**, with a legend. The diagram must agree with the treeview (same components, same add/modify/remove classification).
 3. **Parallel execution plan** — design units grouped into lanes that can be built concurrently: per lane its ordered tasks, its dependencies on other lanes, and merge/checkpoint gates. This section is the input writing-plans uses for task ordering and parallel subagent dispatch.
+
+**2nd-consumer rule:** if a touched path already has ≥1 consumer or writer and this design adds another, the refactor to a shared path is in scope by default — add it to the treeview. If that refactor is medium-large (it would materially grow the arc), surface it instead as a numbered decision (Dn) for the operator to rule on. Any split-brain discovered during research — in scope or not — gets recorded in a **Split-brains found** section of the spec.
 
 **Spec Self-Review:**
 After writing the spec document, look at it with fresh eyes:
@@ -124,6 +134,7 @@ After writing the spec document, look at it with fresh eyes:
 3. **Scope check:** Is this focused enough for a single implementation plan, or does it need decomposition?
 4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
 5. **Required sections:** treeview (paths verified, LOC deltas present), to-be puml (colors consistent with the treeview), parallel execution plan — all present and mutually consistent?
+6. **Grounding check:** every treeview entry carries the full evidence contract; every `new` entry shows its empty searches; every 2nd-consumer finding is either in the treeview or a numbered Dn.
 
 Fix any issues inline. No need to re-review — just fix and move on.
 

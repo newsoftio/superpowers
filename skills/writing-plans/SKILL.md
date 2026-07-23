@@ -35,6 +35,16 @@ This structure informs the task decomposition. Each task should produce self-con
 
 Start from the spec's parallel execution plan: keep its lanes intact so independent lanes can be dispatched to parallel subagents, and label each task with its lane.
 
+## Plan Grounding
+
+Before writing tasks, dispatch plan-grounding researcher subagent(s) (see [plan-researcher-prompt.md](plan-researcher-prompt.md)) against the spec's touched-files treeview — group entries by domain, one researcher per group. They return, per entry:
+
+- Exact modification points (`file:line`) with the current code excerpt
+- Real signatures of every function/class/interface the tasks will consume
+- Existing helpers, fixtures, and test harnesses tasks must reuse instead of recreating
+
+Task **Files:** and **Interfaces:** blocks MUST be written from this output — never from spec-level abstraction or memory. Spec grounding answers *what and where*; plan grounding answers *exactly how*.
+
 ## Task Right-Sizing
 
 A task is the smallest unit that carries its own test cycle and is worth a
@@ -152,6 +162,8 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 **2. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
 
 **3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
+
+**4. Grounding trace:** Does every `file:line` reference and every consumed signature in the tasks trace to plan-grounding output? An anchor no researcher verified is an invented anchor — re-ground it.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
