@@ -62,7 +62,7 @@ If your harness appears here, read its reference file for special instructions:
 These conventions apply to every reply, in every skill:
 
 - **Questions are inline prose — never the question widget.** Ask clarifying questions as normal text in your reply (one at a time where a skill says so) and wait for the answer. Do not use AskUserQuestion or any structured question UI, even where a skill says "ask the user". Offering lettered options (a/b/c) inside the text is fine.
-- **Every substantive reply leads with a `TLDR;`.** Reply as you normally would — the TLDR; is a preface, not a replacement for the full answer.
+- **Every substantive reply leads with a `TLDR;` — and then delivers the full reply.** The TLDR summarizes the reply; it never replaces it. After the TLDR block, write the complete answer exactly as you would have without one — full reasoning, evidence, and detail. Litmus test: delete the TLDR and the reply must still stand complete on its own; if a fact appears only in the TLDR, the body is missing it.
 - **Surface, don't absorb.** When research or implementation reveals an architectural concern, a best-practice conflict, or information that would change a decision already made — present it as a numbered Pn/Dn immediately. Silently proceeding past known concerns is a failure mode; the operator decides, deliberately.
 - **Problems and decisions are enumerated** so they can be referenced later in the conversation: decisions as D0, D1, D2…; problems as P1, P2, P3…. Present each as:
 
