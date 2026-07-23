@@ -7,7 +7,7 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 ## Overview
 
-Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
+Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. Right-sized verification (see the test-driven-development rubric). Frequent commits.
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
@@ -104,6 +104,15 @@ include this section.]
   and return types. A task's implementer sees only their own task; this
   block is how they learn the names and types neighboring tasks use.]
 
+**Verification:** `test` | `smoke` | `live-proof` | `none` — [one line: why this tier.
+Per the test-driven-development rubric: bug fixes, complex/error-prone logic, and
+contracts others consume MUST be `test`; wiring/config/glue/UI assembly may be
+`smoke`/`live-proof`; `none` is for trivial mechanical changes only.]
+
+The steps below show the `test`-tier shape. For `smoke`/`live-proof` tiers, replace
+steps 1–4 with: implement → run in the real context → record the observed evidence
+(exact command + expected observable result). For `none`: implement → commit.
+
 - [ ] **Step 1: Write the failing test**
 
 ```python
@@ -151,7 +160,7 @@ Every step must contain the actual content an engineer needs. These are **plan f
 - Exact file paths always
 - Complete code in every step — if a step changes code, show the code
 - Exact commands with expected output
-- DRY, YAGNI, TDD, frequent commits
+- DRY, YAGNI, right-sized verification, frequent commits
 
 ## Self-Review
 
@@ -164,6 +173,8 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 **3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
 
 **4. Grounding trace:** Does every `file:line` reference and every consumed signature in the tasks trace to plan-grounding output? An anchor no researcher verified is an invented anchor — re-ground it.
+
+**5. Verification strategies:** Does every task declare a Verification tier? Does every bug-fix, complex-logic, or shared-contract task declare `test`? Does every `none` carry a justification?
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
